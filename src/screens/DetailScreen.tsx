@@ -1,10 +1,10 @@
 import React from 'react'
-import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, Image, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParams } from '../navigation/Navigation';
 import { ScrollView } from 'react-native-gesture-handler';
-import Icon from 'react-native-vector-icons/Ionicons'
 import { useMovieDetail } from '../hooks/useMovieDetail';
+import { MovieDetails } from '../components/MovieDetails';
 
 const scrHeight = Dimensions.get('screen').height
 interface Props extends StackScreenProps<RootStackParams, 'DetailScreen'> {
@@ -16,7 +16,7 @@ export const DetailScreen = ({ route }: Props) => {
     const movie = route.params
     const uri = `https://image.tmdb.org/t/p/w500${movie.poster_path}`
 
-    useMovieDetail(movie.id)
+    const { isLoading, cast, movieFull } = useMovieDetail(movie.id)
 
     return (
         <ScrollView>
@@ -29,14 +29,15 @@ export const DetailScreen = ({ route }: Props) => {
                 </View>
             </View>
             <View style={styles.marginContainer}>
-                <Icon
-                    name='star-outline'
-                    color='gray'
-                    size={20}
-                />
                 <Text style={styles.subTitle}>{movie.vote_average}</Text>
                 <Text style={styles.title}>{movie.original_title}</Text>
             </View>
+
+            {
+                isLoading
+                    ? <ActivityIndicator size={35} color="grey" style={{ marginTop: 20 }} />
+                    : <MovieDetails movieFull={movieFull!} cast={cast} />
+            }
 
         </ScrollView>
     )
